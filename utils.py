@@ -5,6 +5,7 @@ from faker import Faker
 import collections
 fake = Faker('en_US')
 
+# use data_generator.data() to access data
 class data_generator:
     position = ['GK', 'CB', 'CM', 'RM', 'LM', 'LW', 'RW', 'ST']
     teams = {'ANKARA': ['Gençlerbirliği', 'Ankara Demirspor', 'Ankaragücü', 'Muhafızgücü', 'Harp Okulu'],
