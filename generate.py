@@ -13,18 +13,18 @@ teams = {'ANKARA': ['Gençlerbirliği', 'Ankara Demirspor', 'Ankaragücü', 'Muh
          'Ligue 1': ['Angers', 'Bordeaux', 'Brest', 'Dijon', 'Lens']}
 position = ['GK', 'CB', 'CM', 'RM', 'LM', 'LW', 'RW', 'ST']
 
-player_list = []
+player_list = {}
 
 for i in range(100):
-    player = {}
-    player['name'] = fake.name()
-    player['na'] = nationality[randint(0, 4)]
-    player['league'] = leagues[randint(0, 4)]
-    player['team'] = teams[player['league']][randint(0, 4)]
-    player['rating'] = randint(0, 100)
-    player['pos'] = position[randint(0, 7)]
-    player_list.append(player)
+    name = fake.unique.name()
+    player_list[name] = {}
+    player_list[name]['na'] = nationality[randint(0, 4)]
+    player_list[name]['league'] = leagues[randint(0, 4)]
+    player_list[name]['team'] = teams[player_list[name]
+                                      ['league']][randint(0, 4)]
+    player_list[name]['rating'] = randint(0, 100)
+    player_list[name]['pos'] = position[randint(0, 7)]
 
 fout = open('players.json', 'w')
-json.dump(player_list, fout)
+json.dump(player_list, fout, indent=4)
 fout.close()
