@@ -17,7 +17,9 @@ class data_generator:
     
     def __init__(self, size: int, nationality: list = None, teams: dict = None, outfile: str = 'players.json'):
         """
-        Initialization can takes up to 4 arguments
+        Initialization can takes up to 4 arguments, three of them can be empty and defaulted to the ones above
+
+        args:
         size: an integer size of the dataset desired
         nationality: a list of nations, can be any length
         teams: a dictionaty of league and teams, E.g.: {'league1': [team1, team2, team3]}
