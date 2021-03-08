@@ -176,6 +176,215 @@ def algo_naive_dc(used_players, categorized_players, requirements, nodes, edges,
     return False
 
 
+def algo_improved(players, requirements):
+    leage_nation_mapping = {
+        'ANKARA': 'Turkey',
+        'Premier League': 'England',
+        'La Liga': 'Spain',
+        'Serie A': 'Italy',
+        'Ligue 1': 'France'
+    }
+    nodes, edges = init_squad()
+    categorized_players = {
+        'ANKARA': {
+            'Turkey': {
+                "CM": [], "CB": [], "LM": [], "LW": [], "ST": [], "RW": [], "RM": [], "GK": []
+            },
+            'England': {
+                "CM": [], "CB": [], "LM": [], "LW": [], "ST": [], "RW": [], "RM": [], "GK": []
+            },
+            'Spain': {
+                "CM": [], "CB": [], "LM": [], "LW": [], "ST": [], "RW": [], "RM": [], "GK": []
+            },
+            'Italy': {
+                "CM": [], "CB": [], "LM": [], "LW": [], "ST": [], "RW": [], "RM": [], "GK": []
+            },
+            'France': {
+                "CM": [], "CB": [], "LM": [], "LW": [], "ST": [], "RW": [], "RM": [], "GK": []
+            }
+        },
+        'Premier League': {
+            'Turkey': {
+                "CM": [], "CB": [], "LM": [], "LW": [], "ST": [], "RW": [], "RM": [], "GK": []
+            },
+            'England': {
+                "CM": [], "CB": [], "LM": [], "LW": [], "ST": [], "RW": [], "RM": [], "GK": []
+            },
+            'Spain': {
+                "CM": [], "CB": [], "LM": [], "LW": [], "ST": [], "RW": [], "RM": [], "GK": []
+            },
+            'Italy': {
+                "CM": [], "CB": [], "LM": [], "LW": [], "ST": [], "RW": [], "RM": [], "GK": []
+            },
+            'France': {
+                "CM": [], "CB": [], "LM": [], "LW": [], "ST": [], "RW": [], "RM": [], "GK": []
+            }
+        },
+        'La Liga': {
+            'Turkey': {
+                "CM": [], "CB": [], "LM": [], "LW": [], "ST": [], "RW": [], "RM": [], "GK": []
+            },
+            'England': {
+                "CM": [], "CB": [], "LM": [], "LW": [], "ST": [], "RW": [], "RM": [], "GK": []
+            },
+            'Spain': {
+                "CM": [], "CB": [], "LM": [], "LW": [], "ST": [], "RW": [], "RM": [], "GK": []
+            },
+            'Italy': {
+                "CM": [], "CB": [], "LM": [], "LW": [], "ST": [], "RW": [], "RM": [], "GK": []
+            },
+            'France': {
+                "CM": [], "CB": [], "LM": [], "LW": [], "ST": [], "RW": [], "RM": [], "GK": []
+            }
+        },
+        'Serie A': {
+            'Turkey': {
+                "CM": [], "CB": [], "LM": [], "LW": [], "ST": [], "RW": [], "RM": [], "GK": []
+            },
+            'England': {
+                "CM": [], "CB": [], "LM": [], "LW": [], "ST": [], "RW": [], "RM": [], "GK": []
+            },
+            'Spain': {
+                "CM": [], "CB": [], "LM": [], "LW": [], "ST": [], "RW": [], "RM": [], "GK": []
+            },
+            'Italy': {
+                "CM": [], "CB": [], "LM": [], "LW": [], "ST": [], "RW": [], "RM": [], "GK": []
+            },
+            'France': {
+                "CM": [], "CB": [], "LM": [], "LW": [], "ST": [], "RW": [], "RM": [], "GK": []
+            }
+        },
+        'Ligue 1': {
+            'Turkey': {
+                "CM": [], "CB": [], "LM": [], "LW": [], "ST": [], "RW": [], "RM": [], "GK": []
+            },
+            'England': {
+                "CM": [], "CB": [], "LM": [], "LW": [], "ST": [], "RW": [], "RM": [], "GK": []
+            },
+            'Spain': {
+                "CM": [], "CB": [], "LM": [], "LW": [], "ST": [], "RW": [], "RM": [], "GK": []
+            },
+            'Italy': {
+                "CM": [], "CB": [], "LM": [], "LW": [], "ST": [], "RW": [], "RM": [], "GK": []
+            },
+            'France': {
+                "CM": [], "CB": [], "LM": [], "LW": [], "ST": [], "RW": [], "RM": [], "GK": []
+            }
+        }
+    }
+
+    player_counts_league = {'ANKARA': 0, 'Premier League': 0, 'La Liga': 0, 'Serie A': 0, 'Ligue 1': 0}
+    player_counts_nation = {'Turkey': 0, 'England': 0, 'Spain': 0, 'Italy': 0, 'France': 0}
+    sorted_players = sorted(players, key=lambda x: x['rating'], reverse=True)
+    
+    for player in sorted_players:
+        player_counts_league[player['league']] = player_counts_league[player['league']] + 1
+        player_counts_nation[player['na']] = player_counts_nation[player['na']] + 1
+        categorized_players[player['league']][player['na']][player['pos']].append(player)
+    
+    player_counts_league = {k: v for k, v in sorted(player_counts_league.items(), key=lambda item: item[1])}
+    player_counts_nation = {k: v for k, v in sorted(player_counts_nation.items(), key=lambda item: item[1])}
+
+    if algo_improved_dc(leage_nation_mapping, {}, {}, categorized_players, player_counts_league, player_counts_nation, requirements, nodes, edges, 0):
+        return nodes
+    else:
+        return None
+
+
+def algo_improved_dc(league_nation_mapping, used_players, used_leagues, players, player_counts_league, player_counts_nation, requirements, nodes, edges, depth):
+    if depth == 11:
+        return check_requirements(nodes, edges, requirements)
+
+    node = nodes[depth]
+    position = node.position
+    
+    max_league = requirements[2]
+    max_league_players = requirements[3]
+
+    leagues_to_check = []
+
+    n_used_leagues = 0
+
+    for league, n_players in used_leagues.items():
+        if n_players > 0:
+            n_used_leagues += 1
+
+        if n_players < max_league_players:
+            leagues_to_check.append(league)
+    
+    for league in leagues_to_check:
+        first_nation = league_nation_mapping[league]
+        
+        for player in players[league][first_nation][position]:
+            used = used_players.get(player['name'], False)
+            if used:
+                continue
+            used_players[player['name']] = True
+            used_leagues[league] = used_leagues[league] + 1
+
+            node.set_player(player)
+            if algo_improved_dc(league_nation_mapping, used_players, used_leagues, players, player_counts_league, player_counts_nation, requirements, nodes, edges, depth+1):
+                return True
+            used_players[player['name']] = False
+            used_leagues[league] = used_leagues[league] - 1
+        
+        for nation in player_counts_nation.keys():
+            if nation == first_nation:
+                continue
+            for player in players[league][nation][position]:
+                used = used_players.get(player['name'], False)
+                if used:
+                    continue
+                used_players[player['name']] = True
+                used_leagues[league] = used_leagues[league] + 1
+
+                node.set_player(player)
+                if algo_improved_dc(league_nation_mapping, used_players, used_leagues, players, player_counts_league, player_counts_nation, requirements, nodes, edges, depth+1):
+                    return True
+                used_players[player['name']] = False
+                used_leagues[league] = used_leagues[league] - 1
+    
+    if n_used_leagues > max_league:
+        print("This shouldn't happen, check what's wrong with the algorithm")
+
+    if n_used_leagues == max_league:
+        return False
+
+    for league in player_counts_league.keys():
+        if used_leagues.get(league, 0) > 0:
+            continue
+        first_nation = league_nation_mapping[league]
+        
+        for player in players[league][first_nation][position]:
+            used = used_players.get(player['name'], False)
+            if used:
+                continue
+            used_players[player['name']] = True
+            used_leagues[league] = used_leagues.get(league, 0) + 1
+
+            node.set_player(player)
+            if algo_improved_dc(league_nation_mapping, used_players, used_leagues, players, player_counts_league, player_counts_nation, requirements, nodes, edges, depth+1):
+                return True
+            used_players[player['name']] = False
+            used_leagues[league] = used_leagues[league] - 1
+        
+        for nation in player_counts_nation.keys():
+            if nation == first_nation:
+                continue
+            for player in players[league][nation][position]:
+                used = used_players.get(player['name'], False)
+                if used:
+                    continue
+                used_players[player['name']] = True
+                used_leagues[league] = used_leagues.get(league, 0) + 1
+
+                node.set_player(player)
+                if algo_improved_dc(league_nation_mapping, used_players, used_leagues, players, player_counts_league, player_counts_nation, requirements, nodes, edges, depth+1):
+                    return True
+                used_players[player['name']] = False
+                used_leagues[league] = used_leagues[league] - 1
+        
+
 def check_requirements(nodes, edges, requirements):
     chem_req = requirements[0]
     rating_req = requirements[1]
@@ -239,4 +448,3 @@ def check_requirements(nodes, edges, requirements):
         return False
     
     return True
-
