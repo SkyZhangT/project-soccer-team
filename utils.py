@@ -2,7 +2,9 @@ import json
 import random
 from random import randint
 from faker import Faker
+from scipy.stats import skewnorm
 import collections
+import math
 fake = Faker('en_US')
 
 # use data_generator.data() to access data
@@ -19,6 +21,7 @@ class data_generator:
                     'Serie A': 'Italy',
                     'Ligue 1': 'France'}
     data = list()
+    a = 4
     
     def __init__(self, size: int, league_nation: list = None, teams: dict = None, outfile: str = 'players.json'):
         """
@@ -67,9 +70,17 @@ class data_generator:
         else:
             player['na'] = self.nationality[randint(0, len(self.nationality)-1)]
 
-        player['rating'] = randint(70, 100)
+        player['rating'] = self.generate_rating()
         player['pos'] = self.position[randint(0, len(self.position)-1)]
         return player
+
+    def generate_rating(self):
+        rt = math.floor(skewnorm.rvs(self.a)*10)
+        if rt > 30:
+            return 100
+        else:
+            return rt + 70
+
 
     def clear_data(self):
         self.data = list()
